@@ -85,3 +85,22 @@ body {
   cursor: pointer;
   white-space: nowrap;
 }
+
+.appNav {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #111827;
+}
+
+.appNav__link {
+  color: #d1d5db;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.appNav__link--active {
+  color: #fff;
+  font-weight: 700;
+}

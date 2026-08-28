@@ -1,6 +1,9 @@
+import { navbar } from '../components/navbar.js';
+
 export function renderChat() {
   const app = document.querySelector('#app');
   app.innerHTML = `
+    ${navbar('/chat')}
     <main class="chatApp">
       <header class="chatHeader">
         <h1 class="chatTitle">Deadpool</h1>

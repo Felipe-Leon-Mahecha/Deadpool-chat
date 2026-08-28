@@ -1,6 +1,9 @@
+import { navbar } from '../components/navbar.js';
+
 export function renderAbout() {
   const app = document.querySelector('#app');
   app.innerHTML = `
+    ${navbar('/about')}
     <section class="aboutView">
       <h2>Sobre Deadpool</h2>
       <p>Wade Wilson, mercenario con regeneración acelerada y cero filtro. Rompe la cuarta pared, se burla de sí mismo constantemente, y no se toma nada en serio — ni siquiera ser un chatbot.</p>
@@ -10,4 +13,4 @@ export function renderAbout() {
       <p>Proyecto Integrador — Módulo 3, Soy Henry.</p>
     </section>
   `;
-}
+} 
