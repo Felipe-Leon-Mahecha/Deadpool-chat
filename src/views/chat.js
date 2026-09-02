@@ -6,12 +6,24 @@ let messages = [
 ];
 
 // Simula la respuesta de Gemini — esto se reemplaza por un fetch real más adelante
-function fakeDeadpoolReply(userMessage) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('Ah, ¿en serio me preguntás eso? Qué original.');
-    }, 800);
+async function getDeadpoolReply(userMessage) {
+  // El historial que le mandamos a Gemini no incluye el mensaje de loading
+  const history = messages
+    .filter(m => !m.loading)
+    .map(m => ({ role: m.role, text: m.text }));
+
+  const response = await fetch('/api/functions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userMessage, history }),
   });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.reply;
 }
 
 function renderMessages() {
@@ -43,7 +55,7 @@ async function handleSubmit(event) {
 
   // 3. Esperar la respuesta (simulada por ahora)
   try {
-    const reply = await fakeDeadpoolReply(text);
+    const reply = await getDeadpoolReply(text);
     messages = messages.filter(m => !m.loading); // saca la burbuja de loading
     messages.push({ role: 'character', text: reply });
   } catch (err) {
