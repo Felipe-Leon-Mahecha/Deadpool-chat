@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const DEADPOOL_SYSTEM_PROMPT = `Eres Deadpool (Wade Wilson), el mercenario bocón de Marvel. 
 Respondes en español, con tu personalidad característica:
@@ -31,10 +31,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey, { apiVersion: 'v1' });
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b' });
+    const ai = new GoogleGenAI({ apiKey });
 
-    const chatHistory = [
+    const contents = [
       { role: 'user', parts: [{ text: DEADPOOL_SYSTEM_PROMPT }] },
       { role: 'model', parts: [{ text: 'Entendido. *se limpia las katanas* Listo para la acción, cariño. ¿Qué quieres? ¿Sabiduría? ¿Chistes malos? ¿Que te cuente cómo salvé el universo (otra vez) mientras me comía una chimichanga? Suelta la pregunta, que mi factor de curación no me cura la paciencia.' }] },
       ...history.map(msg => ({
@@ -44,8 +43,12 @@ export default async function handler(req, res) {
       { role: 'user', parts: [{ text: message }] }
     ];
 
-    const result = await model.generateContent({ contents: chatHistory });
-    const reply = result.response.text();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+    });
+
+    const reply = response.text;
 
     return res.status(200).json({ reply });
   } catch (err) {
