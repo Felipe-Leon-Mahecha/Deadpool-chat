@@ -131,7 +131,7 @@ Corre 8 tests unitarios con Vitest sobre las funciones puras de `src/utils.js`:
 
 ## Capturas de pantalla
 
-_(Agregar acá las capturas de: vista Home, vista Chat con conversación real, vista About, y la app funcionando en mobile/tablet/desktop)_
+_(Agregar acá capturas de: vista Home, vista Chat con conversación real, vista About, y la app funcionando en mobile/tablet/desktop — ver también las capturas del registro de uso de IA más abajo)_
 
 ---
 
@@ -139,7 +139,15 @@ _(Agregar acá las capturas de: vista Home, vista Chat con conversación real, v
 
 Se usó IA como apoyo durante todo el desarrollo, principalmente para acompañamiento técnico paso a paso (explicación de conceptos, debugging guiado) y para resolver un bug puntual de integración con la API de Gemini.
 
-### 1. Diseño del system prompt de Deadpool
+### 1. Elección y diseño del personaje
+
+![Elección del personaje](Capturas/1.png)
+
+**Contexto:** definición inicial de por qué Deadpool encaja bien como personaje para el chat (personalidad distintiva, humor autodirigido que no requiere contenido ofensivo real).
+
+### 2. Diseño del system prompt de Deadpool
+
+![Diseño del system prompt](Capturas/2.png)
 
 **Prompt usado:**
 > "Elegí a Deadpool como personaje para mi chat de IA. Ayúdame a diseñar un system prompt que capture su personalidad sarcástica y su humor negro, pero que sea apropiado para un chat y no cruce líneas de contenido ofensivo real."
@@ -148,11 +156,14 @@ Se usó IA como apoyo durante todo el desarrollo, principalmente para acompañam
 
 **Decisión tomada:** el prompt final quedó fijo en `api/functions.js`, del lado del servidor, para que nunca sea visible en el frontend.
 
-### 2. Debugging del error 404 al conectar con Gemini
+### 3-4. Debugging del error 404 al conectar con Gemini
+
+![Consultando el error en Gemini vía Vercel](Capturas/3.png)
+![opencode diagnosticando el problema real](Capturas/4.png)
 
 **Contexto del problema:** la serverless function devolvía siempre error 500, con el mensaje real (visto en los logs de Vercel) `GoogleGenerativeAIFetchError: [404 Not Found]` al intentar usar el modelo `gemini-1.5-flash` con el SDK `@google/generative-ai`.
 
-**Cómo se resolvió:** con ayuda de una IA (opencode + Gemini) se diagnosticó que el modelo y el SDK estaban deprecados. Se migró la integración completa a:
+**Cómo se resolvió:** primero se consultó directamente en la pantalla de logs de Vercel usando el chat de Gemini integrado para entender el error. Después, con ayuda de opencode (usando Gemini como modelo), se diagnosticó que tanto el modelo como el SDK estaban deprecados. Se migró la integración completa a:
 ```js
 import { GoogleGenAI } from '@google/genai';
 const ai = new GoogleGenAI({ apiKey });
@@ -161,6 +172,23 @@ await ai.models.generateContent({ model: 'gemini-3.6-flash', contents });
 
 **Decisión tomada:** se mantuvo el system prompt de Deadpool y el manejo de historial sin cambios — el fix fue exclusivamente la capa de conexión con la API (SDK + nombre del modelo). Se verificó el fix probando el chat en el deploy real de Vercel antes de darlo por cerrado.
 
-### 3. Acompañamiento general del desarrollo
+### 5-7. Acompañamiento técnico y decisiones de arquitectura
 
-Se usó IA como tutor durante todo el proceso: explicación de conceptos de la cursada (mobile-first, History API, Promises/async-await, patrón ViewModel), revisión de código paso a paso, y guía para resolver errores de configuración (Vercel CLI, variables de entorno, estructura de carpetas). Las decisiones de arquitectura (separación en `router.js`/`navigation.js`/`views/`, extracción de funciones puras a `utils.js` para testing) se tomaron de forma guiada, entendiendo el porqué de cada patrón antes de aplicarlo.
+![Explicación de pushState/popstate](Capturas/5.png)
+![Debugging del error 404 de Gemini con evidencia](Capturas/6.png)
+![Razonamiento detrás de separar lógica en utils.js](Capturas/7.png)
+
+Se usó IA como tutor durante todo el proceso, con tres ejemplos representativos:
+
+- **Concepto técnico:** por qué `history.pushState()` no dispara automáticamente el render de una vista (y por qué hay que llamar al router manualmente después).
+- **Debugging con evidencia:** análisis del error 404 al conectar con Gemini a partir del mensaje exacto de los logs de Vercel, para diagnosticar que el modelo estaba deprecado antes de tocar código a ciegas.
+- **Decisión de arquitectura:** por qué separar la lógica de validación y transformación de datos (`isValidMessage`, `buildGeminiHistory`) del código que maneja el DOM en `chat.js`, para que esas funciones fueran testeables de forma aislada con Vitest.
+
+En los tres casos, las decisiones de arquitectura (separación en `router.js`/`navigation.js`/`views/`, extracción de funciones puras a `utils.js` para testing) se tomaron de forma guiada, entendiendo el porqué de cada patrón antes de aplicarlo — no como código copiado sin revisar.
+
+### 8. Commit final del proyecto
+
+![Commit y push final](Capturas/8.png)
+
+Última captura del flujo de trabajo con Git, mostrando el commit final subido al repositorio antes de la entrega.
+
