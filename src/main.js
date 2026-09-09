@@ -1,13 +1,13 @@
 import { router } from './router.js';
 import { setupLinkInterception } from './navigation.js';
 
-// 1. Escuchar Back/Forward del navegador
+// Aquí se escuchan los botones Back/Forward del navegador (evento popstate)
 window.addEventListener('popstate', () => {
   router();
 });
 
-// 2. Activar la intercepción de links internos
+// Aquí se activa la intercepción de los links internos
 setupLinkInterception();
 
-// 3. Render inicial — decide qué mostrar según la URL con la que se abrió la app
+// Aquí se hace el render inicial según la URL con la que se abrió la app
 router();

@@ -1,13 +1,13 @@
 import { navbar } from '../components/navbar.js';
 
-// Array en memoria — el "historial de conversación durante la sesión"
+// Aquí se guarda el historial de conversación de la sesión (array en memoria)
 let messages = [
   { role: 'character', text: 'Oh mira, otro humano con preguntas. ¿Vienes por sabiduría o solo quieres ver si sangro cuando me insultan?' }
 ];
 
-// Simula la respuesta de Gemini — esto se reemplaza por un fetch real más adelante
+// Aquí se cumple la función de obtener la respuesta de Deadpool desde la API (fetch a la serverless function)
 async function getDeadpoolReply(userMessage) {
-  // El historial que le mandamos a Gemini no incluye el mensaje de loading
+  // Aquí se arma el historial que se manda a Gemini, sin el mensaje de loading
   const history = messages
     .filter(m => !m.loading)
     .map(m => ({ role: m.role, text: m.text }));
@@ -34,7 +34,7 @@ function renderMessages() {
     <div class="message message--${m.role}${m.loading ? ' message--loading' : ''}">${m.text}</div>
   `).join('');
 
-  // Scroll automático al último mensaje
+  // Aquí se hace scroll automático al último mensaje
   container.scrollTop = container.scrollHeight;
 }
 
@@ -42,24 +42,24 @@ async function handleSubmit(event) {
   event.preventDefault();
   const input = document.querySelector('.chatInput');
   const text = input.value.trim();
-  if (!text) return; // no dispares nada con input vacío (edge case de la lecture 4)
+  if (!text) return; // aquí se descarta el input vacío
 
-  // 1. Mensaje del usuario, al instante
+  // Aquí se agrega el mensaje del usuario al historial, al instante
   messages.push({ role: 'user', text });
   input.value = '';
   renderMessages();
 
-  // 2. Estado loading — burbuja de "escribiendo..."
+  // Aquí se muestra el estado loading (burbuja de "escribiendo...")
   messages.push({ role: 'character', text: 'Deadpool está escribiendo...', loading: true });
   renderMessages();
 
-  // 3. Esperar la respuesta (simulada por ahora)
+  // Aquí se espera la respuesta de la API
   try {
     const reply = await getDeadpoolReply(text);
-    messages = messages.filter(m => !m.loading); // saca la burbuja de loading
+    messages = messages.filter(m => !m.loading); // aquí se saca la burbuja de loading
     messages.push({ role: 'character', text: reply });
   } catch (err) {
-    messages = messages.filter(m => !m.loading);
+    messages = messages.filter(m => !m.loading); // aquí se saca la burbuja de loading
     messages.push({ role: 'character', text: 'Algo salió mal. Intenta de nuevo.' });
   }
   renderMessages();

@@ -17,5 +17,5 @@ export function router() {
 
 export function navigateTo(path) {
   history.pushState(null, '', path);
-  router(); // CRÍTICO: pushState NO dispara popstate solo, hay que llamar a mano
+  router(); // pushState no dispara popstate, por eso aquí se llama al router manualmente
 }
